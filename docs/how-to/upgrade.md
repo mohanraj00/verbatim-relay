@@ -75,10 +75,12 @@ claude plugin update nookku@nookku
 
 The second command names the new version, or says that the plugin is already at the latest version. Restart Claude Code to load the new version. `claude plugin list` shows the version of `nookku@nookku`.
 
-If you use the plugin in Codex, update the marketplace, then add the plugin again. This installs the version of the updated marketplace ([method](../../scripts/spike_codex_plugin.py)):
+If you use the plugin in Codex, remove the plugin and its marketplace, then install them again:
 
 ```bash
-codex plugin marketplace upgrade nookku
+codex plugin remove nookku@nookku
+codex plugin marketplace remove nookku
+codex plugin marketplace add mohanraj00/nookku
 codex plugin add nookku@nookku
 ```
 
