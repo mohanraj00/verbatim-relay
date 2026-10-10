@@ -51,7 +51,8 @@ class CodexUnusable(Exception):
 
 
 def read_hooks(root: Path, timeout: float | None = None) -> tuple[list[dict[str, Any]], list[str]]:
-    """The hooks and the warnings of hooks/list for the project, from one app-server."""
+    """The hooks, and the warnings and errors of hooks/list for the project, from one
+    app-server."""
     timeout = TIMEOUT if timeout is None else timeout
     lines = [
         {
@@ -111,7 +112,8 @@ def read_hooks(root: Path, timeout: float | None = None) -> tuple[list[dict[str,
         raise GateError(f"hooks/list failed: {answer['error']}")
     try:
         entry = answer["result"]["data"][0]
-        return list(entry["hooks"]), list(entry.get("warnings", []))
+        notes = [*entry.get("warnings", []), *entry.get("errors", [])]
+        return list(entry["hooks"]), [n if isinstance(n, str) else json.dumps(n) for n in notes]
     except (KeyError, IndexError, TypeError):
         raise GateError(f"hooks/list gave an answer of a wrong form: {answer}") from None
 
@@ -233,13 +235,19 @@ def check(root: Path) -> dict[str, Any]:
     if shutil.which(command()) is None:
         return {"codex": False, "hooks": [], "problems": []}
     try:
-        hooks, _ = read_hooks(root)
+        hooks, notes = read_hooks(root)
     except CodexUnusable as e:
         return {"codex": False, "hooks": [], "problems": [], "note": str(e)}
     except GateError as e:
         return {"codex": True, "hooks": [], "problems": [f"cannot read the hooks of Codex: {e}"]}
     ours = [_summary(h) for h in hooks if _origin(h) is not None]
-    return {"codex": True, "hooks": ours, "problems": problems(hooks, root)}
+    return {"codex": True, "hooks": ours, "problems": note_problems(notes) + problems(hooks, root)}
+
+
+def note_problems(notes: list[str]) -> list[str]:
+    """A warning or an error of hooks/list that names nookku. If Codex cannot parse a hooks file
+    of nookku, it lists no hook of that file and gives only a warning, so the gate fails closed."""
+    return [f"Codex cannot use a hooks file of nookku: {n}" for n in notes if "nookku" in n.lower()]
 
 
 def refusal(result: dict[str, Any]) -> str:

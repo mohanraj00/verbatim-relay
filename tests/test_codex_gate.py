@@ -148,8 +148,8 @@ def fake_codex(tmp_path: Path, monkeypatch: pytest.MonkeyPatch, body: str) -> No
     monkeypatch.setenv("NOOKKU_CODEX", str(fake))
 
 
-def answer_with(hooks: list[dict[str, Any]]) -> str:
-    result = json.dumps({"data": [{"hooks": hooks, "warnings": [], "errors": []}]})
+def answer_with(hooks: list[dict[str, Any]], warnings: list[str] | None = None) -> str:
+    result = json.dumps({"data": [{"hooks": hooks, "warnings": warnings or [], "errors": []}]})
     return (
         f"result = json.loads({result!r})\n"
         "for line in sys.stdin:\n"
@@ -167,6 +167,18 @@ def test_check_reads_hooks_list(tmp_path: Path, monkeypatch: pytest.MonkeyPatch)
     assert result["problems"] == ["the plugin hook UserPromptSubmit is untrusted, not trusted."]
     assert [h["trust"] for h in result["hooks"]] == ["untrusted", "trusted"]
     assert {h["script_sha256"] for h in result["hooks"]} == {codex_gate.PLUGIN_SCRIPT_SHA256}
+
+
+def test_a_hooks_file_of_nookku_that_codex_cannot_parse_is_refused(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # Codex 0.162.0 lists no hook of a plugin hooks file that it cannot parse, and gives only a
+    # warning (proofs/spikes/codex-plugin.json).
+    parse = "failed to parse plugin hooks config /c/plugins/cache/m/nookku/0.4.0/hooks/hooks.json"
+    other = "failed to parse plugin hooks config /c/plugins/cache/m/other/1.0/hooks/hooks.json"
+    fake_codex(tmp_path, monkeypatch, answer_with([OTHER], [parse, other]))
+    result = codex_gate.check(tmp_path)
+    assert result["problems"] == [f"Codex cannot use a hooks file of nookku: {parse}"]
 
 
 def test_with_no_codex_command_the_gate_does_not_run(tmp_path: Path) -> None:
