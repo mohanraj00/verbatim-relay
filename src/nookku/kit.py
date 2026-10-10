@@ -1,4 +1,4 @@
-"""The hook kit of SPEC.md section 5: classic hooks that Codex and Claude Code share."""
+"""The relay of SPEC.md section 5: command hooks that Codex and Claude Code share."""
 
 from __future__ import annotations
 
@@ -37,7 +37,7 @@ HOOK_DEADLINE = 300
 DETAIL_LIMIT = 300
 LOOPBACK = ["127.0.0.1", "localhost", "0.0.0.0", "[::1]"]
 # Tools that only read, write or search files. Every other tool is denied when its input names
-# the tap or the agent, so a tool that the kit does not know is denied too.
+# the tap or the agent, so a tool that the relay does not know is denied too.
 FILE_TOOLS = {
     "Read",
     "Write",
@@ -65,7 +65,7 @@ ENTRY_REASON = "nookku: during a test, only the tap runs the entry."
 # A command hook gets only the text of a prompt, not its attachments. The display layer of the
 # Claude Code plugin sees them, and drops the prompt with this text in relay mode (#216).
 ATTACHMENTS_REASON = "nookku: the relay does not send attachments. Nothing was sent."
-# Prompts that the kit runs and never relays (SPEC.md section 5).
+# Prompts that the relay runs and never relays (SPEC.md section 5).
 CONTROL = {"nookku start", "nookku end", "nookku status"}
 
 
@@ -246,7 +246,7 @@ def handle(event: dict[str, Any], root: Path, harness: str) -> dict[str, Any] | 
             return _block("nookku: the hook input has no prompt text. Nothing was sent.")
         found = lone_surrogate(said)
         if found:
-            # A relayed message is never changed, so the kit refuses it (SPEC.md section 5).
+            # A relayed message is never changed, so the relay refuses it (SPEC.md section 5).
             return _block(f"nookku: nothing was sent. The message has {found}.")
         if config.entry:
             cur = state.current(root)
@@ -440,7 +440,7 @@ def hook_command(root: Path, harness: str) -> str:
     return " ".join(shlex.quote(a) for a in argv)
 
 
-# The hook commands of the kit. verbatim-relay 0.3.x and earlier wrote the second one, so a new
+# The hook commands of nookku. verbatim-relay 0.3.x and earlier wrote the second one, so a new
 # `init` replaces those hooks too.
 OWN_COMMANDS = ("nookku hook", "verbatim_relay hook")
 
@@ -458,7 +458,7 @@ def _ours(hook: Any) -> bool:
 
 
 def _merge_hooks(settings: dict[str, Any], command: str) -> dict[str, Any]:
-    """Put the kit's hooks into the settings. Remove only the old hooks of the kit, and keep each
+    """Put the project hooks into the settings. Remove only the old project hooks, and keep each
     other hook, also one in the same group. Raise ValueError if the hooks have a wrong form."""
     hooks = settings.setdefault("hooks", {})
     if not isinstance(hooks, dict):
@@ -569,7 +569,7 @@ def transcript(
 ) -> int:
     """Print the exact conversation for the harness model to evaluate.
 
-    The plugin's transcript tool runs this command, so that both relays show the same text.
+    The plugin's transcript tool runs this command, so that both forms show the same text.
     """
     if session is not None:
         turns = [r for r in read_relay(record) if isinstance(r, Turn) and r.session == session]

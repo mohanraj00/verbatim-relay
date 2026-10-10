@@ -72,4 +72,4 @@ It starts the entry, sends one message, and ends the test. It passes if a reply 
 
 ## 5. Hand over
 
-Show the tester the entry and the configuration, and ask the tester to review them. The tester then starts the test: `/nookku start` with the Claude Code plugin, or the prompt `nookku start` with the hook kit.
+Show the tester the entry and the configuration, and ask the tester to review them. The tester then starts the test: the prompt `nookku start`. In Claude Code, the plugin also gives `/nookku start`.

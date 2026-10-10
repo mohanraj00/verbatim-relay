@@ -34,7 +34,7 @@ The answer is the agent's answer with no change: `{"reply": "We ship to Chennai 
 ## 2. Install a relay with no entry
 
 - **Plugin:** run `nookku init plugin` with no `--entry`. It writes `.nookku/config.json` and no project hooks. Its flags set `tap_url`, `adapter` and the others: `--tap-url`, `--agent-url`, `--adapter` and so on.
-- **Hook kit:** run `nookku init claude-code` or `nookku init codex` with no `--entry`. The kit takes the same options as flags: `--tap-url`, `--agent-url`, `--adapter` and so on.
+- **Project hooks:** run `nookku init claude-code` or `nookku init codex` with no `--entry`. `init` takes the same options as flags: `--tap-url`, `--agent-url`, `--adapter` and so on.
 
 ## 3. Relay mode on and off
 
@@ -43,7 +43,7 @@ With no entry, relay mode has no test. Switch it on before your messages and off
 | Relay | On | Off |
 |---|---|---|
 | Plugin | `/nookku on` | `/nookku off` |
-| Hook kit | `nookku mode on` | `nookku mode off` |
+| Project hooks | `nookku mode on` | `nookku mode off` |
 
 The relay record is `.nookku/relay.jsonl` by default (the option `record`). After the test, audit the two records:
 
@@ -62,7 +62,7 @@ nookku audit --tap tap.jsonl --relay .nookku/relay.jsonl
 | `reply_field` | `reply` | `json` adapter: the dot path of the reply in the response body |
 | `openai_model` | empty | `openai` adapter: the `model` field of each request |
 | `openai_stream` | `false` | `openai` adapter: `true` sends `"stream": true` in each request, for an agent that streams only on request |
-| `record` | `.nookku/relay.jsonl` | The relay record. The hook kit reads a relative path from the project root, and the plugin from the working directory. |
+| `record` | `.nookku/relay.jsonl` | The relay record. The project hooks read a relative path from the project root, and the plugin from the working directory. |
 
 Give the tap the same adapter: `nookku tap --agent URL --record FILE --adapter openai`. [reference/cli.md](../reference/cli.md#nookku-tap) lists each flag of the tap.
 
@@ -75,7 +75,7 @@ Give the tap the same adapter: `nookku tap --agent URL --record FILE --adapter o
 
 ## Streamed replies
 
-If your agent streams its reply (SSE, `text/event-stream`), use the `openai` adapter. The relay sends `"stream": false`. If your agent streams only on request, set `openai_stream` to `true` (the hook kit flag is `--openai-stream`, with no value). Then the relay sends `"stream": true`. If the agent streams, the tap sends each part to the relay when it comes. It records the complete reply when the stream ends. The relay shows the reply when the stream is complete. A stream that ends early, sends an error or has a malformed chunk gives an error, not a part of the reply. [SPEC.md section 4.1](../../SPEC.md#41-http-mode) defines the rules.
+If your agent streams its reply (SSE, `text/event-stream`), use the `openai` adapter. The relay sends `"stream": false`. If your agent streams only on request, set `openai_stream` to `true` (the `init` flag is `--openai-stream`, with no value). Then the relay sends `"stream": true`. If the agent streams, the tap sends each part to the relay when it comes. It records the complete reply when the stream ends. The relay shows the reply when the stream is complete. A stream that ends early, sends an error or has a malformed chunk gives an error, not a part of the reply. [SPEC.md section 4.1](../../SPEC.md#41-http-mode) defines the rules.
 
 ## Security
 

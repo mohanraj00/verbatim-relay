@@ -15,7 +15,7 @@ The proofs show that each relay is exact in a real harness. They run the harness
 
 Codex runs project hooks only after a person trusts them. Never try to skip the trust step. Trust these projects once:
 
-1. Install the kit in the project of the proofs: `nookku init codex --root .proof/codex`.
+1. Install the project hooks in the project of the proofs: `nookku init codex --root .proof/codex`.
 2. Start `codex` in `.proof/codex` and accept the hooks prompt.
 3. For the evaluation proofs, do the same in `~/.nookku-proof/codex`. That project is outside the repo, so that the evaluating model cannot read the docs that describe the planted bug ([proof_report.py](../../scripts/proof_report.py)).
 
@@ -28,9 +28,9 @@ If `.codex/hooks.json` changes, trust it again.
 | P1 to P4, plugin | `uv run python scripts/proofs_claude_code.py` | `proofs/claude-code/` |
 | P1 to P4, plugin, streamed agent | `uv run python scripts/proofs_claude_code.py --stream` | `proofs/claude-code-stream/` |
 | P1 to P4, plugin, agent that streams only on request | `uv run python scripts/proofs_claude_code.py --stream --on-request` | `proofs/claude-code-stream-on-request/` |
-| P1 to P4, hook kit | `uv run python scripts/proofs_hooks.py claude-code` or `codex` | `proofs/hooks-<harness>/` |
-| P1 to P4, hook kit, streamed agent | `uv run python scripts/proofs_hooks.py claude-code --stream` or `codex --stream` | `proofs/hooks-<harness>-stream/` |
-| P1 to P4, hook kit, agent that streams only on request | `uv run python scripts/proofs_hooks.py claude-code --stream --on-request` or `codex --stream --on-request` | `proofs/hooks-<harness>-stream-on-request/` |
+| P1 to P4, project hooks | `uv run python scripts/proofs_hooks.py claude-code` or `codex` | `proofs/hooks-<harness>/` |
+| P1 to P4, project hooks, streamed agent | `uv run python scripts/proofs_hooks.py claude-code --stream` or `codex --stream` | `proofs/hooks-<harness>-stream/` |
+| P1 to P4, project hooks, agent that streams only on request | `uv run python scripts/proofs_hooks.py claude-code --stream --on-request` or `codex --stream --on-request` | `proofs/hooks-<harness>-stream-on-request/` |
 | Model sessions of the app | `uv run python scripts/proof_sessions.py` | `proofs/sessions/` |
 | Trace of the model sessions | `uv run python scripts/proof_trace.py` | `proofs/trace/` |
 | Backend proxy, no model | `uv run python scripts/proof_backend.py` | `proofs/backend/` |

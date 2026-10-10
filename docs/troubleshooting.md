@@ -13,7 +13,7 @@ First, look in the [test folder](reference/glossary.md#test-folder) `.nookku/tes
 | `transcript`, `trace` or `verify` shows the check test, not your test. | These commands use the latest test. If you ran `check` after your test, give the id of your test ([read-the-results.md](how-to/read-the-results.md#1-find-the-test-id)). |
 | A prompt went to the model in [relay mode](reference/glossary.md#relay-mode). | In relay mode, the [relay](reference/glossary.md#relay) blocks each prompt. Run `nookku status`. If it says `relay mode is off.`, start a test with the prompt `nookku start`. If relay mode is on, the hooks did not run. In Codex, trust the hooks ([In Codex, the model answers my test messages](#in-codex-the-model-answers-my-test-messages)). In Claude Code, install the relay again ([hook kit](how-to/claude-code-hook-kit.md#install), [plugin](how-to/claude-code-plugin.md#install)). |
 | Codex does not run the hooks. | Codex runs project hooks only after a person trusts them. Do the trust step ([codex.md](how-to/codex.md#install), [In Codex, the model answers my test messages](#in-codex-the-model-answers-my-test-messages)). |
-| Each message reaches the agent two times. | The plugin and the hook kit both run. Use one relay ([Each message reaches the agent two times](#each-message-reaches-the-agent-two-times)). |
+| Each message reaches the agent two times. | The plugin and the project hooks both run. Use one form ([Each message reaches the agent two times](#each-message-reaches-the-agent-two-times)). |
 | A test does not start. | Find the error text in [Start a test](#start-a-test). |
 | The test does not end, or each prompt says that no test runs. | Follow [recover-a-stuck-test.md](how-to/recover-a-stuck-test.md). |
 | No `report.md` after the end. | The model writes `report.md` only after the prompt `nookku end`. `nookku end` in a shell, or `/nookku end` in the plugin, ends the test with no [evaluation](reference/glossary.md#evaluation). If `evaluate` is `false` in the configuration, no evaluation starts. If you denied a command of the evaluation, the model can stop. Type the prompt `nookku end` again. If the latest test has no `report.md`, this prompt starts its evaluation ([SPEC.md section 9.1](../SPEC.md#91-start), [test-your-app.md](how-to/test-your-app.md#7-allow-the-evaluation-commands)). In Codex, the sandbox must let the model write in the project ([codex.md](how-to/codex.md#use)). |
@@ -50,13 +50,13 @@ First, look in the [test folder](reference/glossary.md#test-folder) `.nookku/tes
 
 ### `nookku: .nookku/config.json has unknown keys: ['<key>']. Correct or remove them.`
 
-(config.py) **Cause.** `config.json` has a key that Nookku does not know, for example a key with a typo. `start`, `check` and `init` stop with this error. In relay mode, the hook kit blocks each prompt with the same error.
+(config.py) **Cause.** `config.json` has a key that Nookku does not know, for example a key with a typo. `start`, `check` and `init` stop with this error. In relay mode, the relay blocks each prompt with the same error.
 
 **Fix.** Correct the name of the key, or remove it. [reference/config.md](reference/config.md) lists each key.
 
 ### `nookku: .nookku/config.json: 'openai_stream' must be true or false`
 
-(config.py) **Cause.** The key `openai_stream` is not a JSON boolean, for example `"true"` or `1`. `start`, `check`, `init` and `mode on` stop with this error. In relay mode, the hook kit blocks each prompt with it.
+(config.py) **Cause.** The key `openai_stream` is not a JSON boolean, for example `"true"` or `1`. `start`, `check`, `init` and `mode on` stop with this error. In relay mode, the relay blocks each prompt with it.
 
 **Fix.** Write `true` or `false` with no quotes ([reference/config.md](reference/config.md)).
 
@@ -112,7 +112,7 @@ First, look in the [test folder](reference/glossary.md#test-folder) `.nookku/tes
 
 If a test does not end or its bridge stopped, follow [how-to/recover-a-stuck-test.md](how-to/recover-a-stuck-test.md).
 
-In relay mode, both relays fail closed. If a relay cannot send a message, the message does not go to the model. The relay shows the error and writes it in the relay record with `ok: false` ([SPEC.md section 5](../SPEC.md#5-relays)).
+In relay mode, the relay fails closed in both forms. If it cannot send a message, the message does not go to the model. The relay shows the error and writes it in the relay record with `ok: false` ([SPEC.md section 5](../SPEC.md#5-relays)).
 
 If the entry returns an error, crashes or does not answer in [240 seconds](../src/nookku/stdio.py), the relay shows the error and records it. After a crash, each later message gets the same error, with the last lines of `app.log`. End the test and start a new one.
 
@@ -120,7 +120,7 @@ If the entry returns an error, crashes or does not answer in [240 seconds](../sr
 
 (kit.py) **Cause.** Relay mode is on, but the bridge does not run. For example, the computer restarted during a test.
 
-**Fix.** Start a test. Or switch relay mode off: `nookku mode off` with the hook kit.
+**Fix.** Start a test. Or switch relay mode off: `nookku mode off` with the project hooks.
 
 ### `nookku: nothing was sent. The message has a lone surrogate U+<hex> at character <n>.`
 
@@ -166,7 +166,7 @@ If the entry returns an error, crashes or does not answer in [240 seconds](../sr
 
 ### `nookku: relay mode is on, but the config is broken: <reason>`
 
-(kit.py) **Cause.** The hook kit cannot read `config.json`, or the file has an unknown key. The message does not go to the model or to the agent. `<reason>` is the error that `start` and `check` give for the same file.
+(kit.py) **Cause.** The relay cannot read `config.json`, or the file has an unknown key. The message does not go to the model or to the agent. `<reason>` is the error that `start` and `check` give for the same file.
 
 **Fix.** Correct the file. [reference/config.md](reference/config.md) lists each key.
 
@@ -214,9 +214,9 @@ If the entry returns an error, crashes or does not answer in [240 seconds](../sr
 
 ### Each message reaches the agent two times
 
-**Cause.** The plugin and the hook kit both run in the project. The audit shows `duplicate_send` breaks.
+**Cause.** The plugin and the project hooks both run in the project. The audit shows `duplicate_send` breaks.
 
-**Fix.** Use one relay. Remove the Nookku hooks from `.claude/settings.local.json`, or disable the plugin. [how-to/choose-a-relay.md](how-to/choose-a-relay.md#switch-from-one-relay-to-the-other) gives the steps.
+**Fix.** Use one form. Remove the Nookku hooks from `.claude/settings.local.json`, or disable the plugin. [how-to/choose-a-relay.md](how-to/choose-a-relay.md#switch-from-one-form-to-the-other) gives the steps.
 
 ### In Codex, the model answers my test messages
 

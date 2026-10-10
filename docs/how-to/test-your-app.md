@@ -2,7 +2,7 @@
 
 This guide takes your own app from the install to the results of a first [test](../reference/glossary.md#test). Each step gives the expected output, so you can compare your screen with it.
 
-I made the output with the toy shop agent of this repo ([examples/toy-shop/agent.py](../../examples/toy-shop/agent.py)) as the app, verbatim-relay 0.3.0 ([version](https://github.com/mohanraj00/nookku/blob/v0.3.0/src/verbatim_relay/__init__.py)) and the hook kit in Claude Code. Each output is a sample of one run, not a measurement. To make it again, run the steps of this page on the toy shop, with the same 3 messages as the [tutorial](../getting-started.md#6-run-the-test). I shortened the paths of the folders to `.../`. The test ids and the replies of your app are different. The [tutorial](../getting-started.md) shows the same steps for the toy shop only.
+I made the output with the toy shop agent of this repo ([examples/toy-shop/agent.py](../../examples/toy-shop/agent.py)) as the app, verbatim-relay 0.3.0 ([version](https://github.com/mohanraj00/nookku/blob/v0.3.0/src/verbatim_relay/__init__.py)) and the project hooks in Claude Code. Each output is a sample of one run, not a measurement. To make it again, run the steps of this page on the toy shop, with the same 3 messages as the [tutorial](../getting-started.md#6-run-the-test). I shortened the paths of the folders to `.../`. The test ids and the replies of your app are different. The [tutorial](../getting-started.md) shows the same steps for the toy shop only.
 
 ## What you need
 
@@ -103,9 +103,9 @@ FAIL: tap_unparsed: tap line 1: STDIO stdout: a stray line on stdout: 'toy shop 
 
 ## 5. Install the relay, and start the viewer
 
-The [relay](../reference/glossary.md#relay) carries each message to the tap and each reply back to you. Use one relay. [choose-a-relay.md](choose-a-relay.md) compares the plugin and the hook kit.
+The [relay](../reference/glossary.md#relay) carries each message to the tap and each reply back to you. Use one relay. [choose-a-relay.md](choose-a-relay.md) compares the plugin and the project hooks.
 
-### Hook kit in Claude Code
+### Project hooks in Claude Code
 
 ```bash
 nookku init claude-code
@@ -121,7 +121,7 @@ Do not also enable the nookku Claude Code plugin in this project, or each messag
 
 `init` keeps the entry from step 2, so do not give `--entry`. Do not switch relay mode on now. Step 6 starts the test.
 
-### Hook kit in Codex
+### Project hooks in Codex
 
 ```bash
 nookku init codex
@@ -135,7 +135,7 @@ Install the plugin as [claude-code-plugin.md](claude-code-plugin.md#install) say
 
 ### Start the viewer
 
-With the hook kit, open a second terminal in the project folder, and start the viewer:
+With the project hooks, open a second terminal in the project folder, and start the viewer:
 
 ```bash
 nookku view

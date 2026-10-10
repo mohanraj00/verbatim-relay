@@ -229,7 +229,7 @@ The tap starts the entry with these settings ([stdio.py](../../src/nookku/stdio.
 
 - **Interpreter.** The command is `entry` in `.nookku/config.json`. Its first word is the interpreter. Use the interpreter of your app, for example `.venv/bin/python`. If you use a different interpreter, the packages of your app can be missing.
 - **Working folder.** The entry runs in the project root. If your app reads a file with a relative path, for example `.env` or a config file in its own folder, give the app the correct path in the entry.
-- **Environment.** The entry gets the environment of the process that starts the test, and the variables of the bridge, for example `ANTHROPIC_BASE_URL`. After `nookku check` in a shell, it is the environment of that shell. With the hook kit or the plugin, the harness starts the test, so it is the environment of the harness. If your app reads its keys from an environment file, load that file in the entry.
+- **Environment.** The entry gets the environment of the process that starts the test, and the variables of the bridge, for example `ANTHROPIC_BASE_URL`. After `nookku check` in a shell, it is the environment of that shell. With the project hooks or the plugin, the harness starts the test, so it is the environment of the harness. If your app reads its keys from an environment file, load that file in the entry.
 
 After a change to the entry, run `nookku check` again, and do the 4 steps again.
 
@@ -349,8 +349,8 @@ PASS
 | Copies of the model sessions | Yes, in `sessions/` of the test folder | No |
 | Record path | `tap.jsonl` and `relay.jsonl` in the test folder | The `--record` file of the tap, and the relay option `record` (default `.nookku/relay.jsonl`) |
 | Audit | The bridge writes `audit.json` at the end. | You run `nookku audit --tap FILE --relay FILE`. |
-| On | Plugin: `/nookku start`. Hook kit: the prompt `nookku start`. | Plugin: `/nookku on`. Hook kit: `nookku mode on`. |
-| Off | Plugin: `/nookku end`. Hook kit: the prompt `nookku end`. | Plugin: `/nookku off`. Hook kit: `nookku mode off`. |
+| On | Plugin: `/nookku start`. Project hooks: the prompt `nookku start`. | Plugin: `/nookku on`. Project hooks: `nookku mode on`. |
+| Off | Plugin: `/nookku end`. Project hooks: the prompt `nookku end`. | Plugin: `/nookku off`. Project hooks: `nookku mode off`. |
 | Streamed replies | The entry joins the stream into one reply. | Only with the `openai` adapter. |
 
 ## When the app changes

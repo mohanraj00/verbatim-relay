@@ -13,7 +13,7 @@ This diagram shows a test with an entry. With no entry, the relay sends each mes
 ```mermaid
 flowchart TB
     tester([Tester]) -->|types a message| harness[Harness: Claude Code or Codex]
-    harness -->|prompt hook| relay[Relay: plugin or hook kit]
+    harness -->|prompt hook| relay[Relay: nookku hook, from the plugin or the project hooks]
     currentrec[(current.json)] -->|tap URL| relay
     relay -->|HTTP POST with a contract JSON body| tap[Tap]
     tap -->|the same bytes on stdin| entry[Entry]
@@ -21,9 +21,9 @@ flowchart TB
     app -->|reply| entry
     entry -->|a contract JSON line on stdout| tap
     tap -->|the same bytes in the HTTP response| relay
-    relay -->|plugin: a chat row| tester
+    relay -->|the reason of the blocked prompt| tester
     relay -.->|writes| relayrec[(relay.jsonl)]
-    relayrec -->|hook kit| viewer[Viewer: nookku view]
+    relayrec --> viewer[Viewer: nookku view or the pane]
     viewer -->|shows the reply| tester
     tap -.->|writes| taprec[(tap.jsonl)]
 
@@ -70,10 +70,12 @@ The relay sends each message as an HTTP POST with a contract JSON body ([SPEC.md
 
 ## The relays
 
-A relay is the harness extension that carries each message and each reply. There are 2 relays ([SPEC.md section 5](../SPEC.md#5-relays)):
+The relay is the command `nookku hook`. It carries each message and each reply, with one set of rules in Python. It has 2 forms, with the same 2 command hooks ([SPEC.md section 5](../SPEC.md#5-relays), [ADR 0001](adr/0001-one-core-one-plugin.md)):
 
-- **The Claude Code plugin.** It uses function hooks, which are early access. It shows each reply as a row in the chat that the model does not receive. Read [how-to/claude-code-plugin.md](how-to/claude-code-plugin.md).
-- **The hook kit.** It uses the classic hooks that Codex and Claude Code share. It shows each reply as the reason of a blocked prompt, and `nookku view` shows each reply in a second terminal. `codex exec` does not show the reason. Read [how-to/claude-code-hook-kit.md](how-to/claude-code-hook-kit.md) or [how-to/codex.md](how-to/codex.md).
+- **The plugin.** One plugin folder for Claude Code and Codex. It also has the MCP server `nookku mcp`, with the read-only tools `transcript` and `status`, and the `setup` skill. In Claude Code, function hooks add `/nookku`, a status line and a pane. They are early access, and they hold no rule. Read [how-to/claude-code-plugin.md](how-to/claude-code-plugin.md) or [how-to/codex.md](how-to/codex.md).
+- **The project hooks.** `nookku init` writes the same 2 hooks into one project. Read [how-to/claude-code-hook-kit.md](how-to/claude-code-hook-kit.md) or [how-to/codex.md](how-to/codex.md).
+
+Both forms show each reply as the reason of a blocked prompt, and `nookku view` shows each reply in a second terminal. `codex exec` does not show the reason. In Codex, `nookku start` refuses a test if a nookku hook is not trusted ([SPEC.md section 7.8](../SPEC.md#78-codex-hook-gate)).
 
 In [relay mode](reference/glossary.md#relay-mode), the relay takes each prompt before the model sees it. It sends the prompt to the tap and blocks it from the model. The relay also denies a model tool call that names the address of the tap or the agent. It also denies a call that changes the files of a test. The deny is best effort. [limits.md](limits.md) tells you what it does not stop.
 
@@ -94,13 +96,13 @@ This is the plumbing that a test needs. You write the entry once. You change it 
 
 ## One turn
 
-This diagram shows one message in a test with an entry. The plugin and the hook kit do the same steps.
+This diagram shows one message in a test with an entry. The plugin and the project hooks run the same relay, so they do the same steps.
 
 ```mermaid
 sequenceDiagram
     actor Tester
     participant Harness
-    participant Relay as Relay (plugin or hook kit)
+    participant Relay as Relay (nookku hook)
     participant Tap
     participant Entry as Entry and app
     participant Model as Harness model
@@ -126,7 +128,7 @@ sequenceDiagram
 
 - If the agent sends an error, the tap sends status 500. If the agent sends no reply line in [240 seconds](#timeouts), the tap stops the agent and sends status 504 ([SPEC.md section 4.2](../SPEC.md#42-stdio-mode)).
 - If the tap does not answer, for example because the bridge stopped, the relay writes the turn with `ok: false`. It still blocks the prompt, and the model gets nothing ([SPEC.md section 5](../SPEC.md#5-relays)).
-- The plugin shows the reply as a chat row, and then writes the turn. The hook kit writes the turn, and the viewer shows it from `relay.jsonl`.
+- The relay writes the turn, and then shows the reply as the reason of the blocked prompt. The viewer shows it from `relay.jsonl`.
 - The relay sends only the turns with `ok: true` as the history.
 
 ## The bridge
@@ -172,7 +174,7 @@ stateDiagram-v2
 - There are 2 ways to end a test ([SPEC.md section 9.1](../SPEC.md#91-start)). The prompt `nookku end` ends the test and starts the evaluation in one step. `nookku end` in a shell, or `/nookku end` in the plugin, ends the test with no evaluation.
 - A later prompt `nookku end` starts the evaluation of the latest test, if that test ended and has no `report.md`. A new test with `nookku start` becomes the latest test, so the test before it gets no evaluation.
 - If the configuration has `"evaluate": false`, no test gets an evaluation ([reference/config.md](reference/config.md#test-keys)).
-- If the bridge stops before its end steps, `current.json` stays. `start`, `end` and `status` check if the bridge of `current.json` runs. If it does not run, they remove the stale file ([SPEC.md section 7.2](../SPEC.md#72-start-and-end)). The hook kit does this check before each prompt. The plugin does it after a POST to the tap fails. A test with a stale `current.json` has no end time, so it gets no evaluation.
+- If the bridge stops before its end steps, `current.json` stays. `start`, `end` and `status` check if the bridge of `current.json` runs. If it does not run, they remove the stale file ([SPEC.md section 7.2](../SPEC.md#72-start-and-end)). The relay does this check before each prompt. A test with a stale `current.json` has no end time, so it gets no evaluation.
 
 ## The proxies and the receiver
 
@@ -249,17 +251,19 @@ Each wait on the relay path ends before the wait around it, so that the relay ca
 |---|---|---|---|
 | 1 | The tap waits for the agent, in HTTP mode and in stdio mode. | [240](../src/nookku/stdio.py#L24) | `stdio.TIMEOUT` |
 | 2 | The tap answers the relay, at most [5 seconds](../tests/test_timeouts.py#L21) after the agent timeout. | [245](../tests/test_timeouts.py#L21) | `stdio.TIMEOUT + ANSWER` |
-| 3 | The hook kit waits for the tap of a test. | [270](../src/nookku/state.py#L21) | `state.TIMEOUT` |
-| 3 | The hook kit waits for a tap in HTTP mode, with no test. | [280](../src/nookku/kit.py#L32) | `kit.TIMEOUT` |
-| 4 | The harness stops the `UserPromptSubmit` hook of the hook kit. | [300](../src/nookku/kit.py#L35) | `kit.HOOK_DEADLINE` |
+| 3 | The relay waits for the tap of a test. | [270](../src/nookku/state.py#L21) | `state.TIMEOUT` |
+| 3 | The relay waits for a tap in HTTP mode, with no test. | [280](../src/nookku/kit.py#L32) | `kit.TIMEOUT` |
+| 4 | The harness stops the `UserPromptSubmit` hook of the relay. | [300](../src/nookku/kit.py#L35) | `kit.HOOK_DEADLINE` |
 
-Each number links to its constant. The [5 seconds](../tests/test_timeouts.py#L21) of order 2 is the `ANSWER` limit of the test. The plugin runs the same hook as the hook kit, so it has the same timeouts. [tests/test_docs.py](../tests/test_docs.py) checks that this table matches the constants.
+Each number links to its constant. The [5 seconds](../tests/test_timeouts.py#L21) of order 2 is the `ANSWER` limit of the test. The plugin and the project hooks run the same hook, so they have the same timeouts. [tests/test_docs.py](../tests/test_docs.py) checks that this table matches the constants.
 
 ## Where to read the code
 
 | Part | Code |
 |---|---|
-| Hook kit | [src/nookku/kit.py](../src/nookku/kit.py) |
+| Relay and project hooks | [src/nookku/kit.py](../src/nookku/kit.py) |
+| MCP server | [src/nookku/mcp.py](../src/nookku/mcp.py) |
+| Codex hook gate | [src/nookku/codex_gate.py](../src/nookku/codex_gate.py) |
 | Plugin | [plugins/nookku/hooks/hooks.json](../plugins/nookku/hooks/hooks.json), [nookku-hook.sh](../plugins/nookku/hooks/nookku-hook.sh), [.mcp.json](../plugins/nookku/.mcp.json), the display layer [register.tsx](../plugins/nookku/hooks/register.tsx) |
 | Tap, HTTP mode | [src/nookku/tap.py](../src/nookku/tap.py), [adapters.py](../src/nookku/adapters.py) |
 | Tap, stdio mode | [src/nookku/stdio.py](../src/nookku/stdio.py) |

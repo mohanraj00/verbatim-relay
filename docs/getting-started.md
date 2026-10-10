@@ -10,7 +10,7 @@ I made the output of steps 5 and 10 in a second run of the same steps, with verb
 
 - macOS or Linux.
 - Python 3.10 or later ([pyproject.toml](../pyproject.toml)), [uv](https://docs.astral.sh/uv/) and git.
-- Claude Code. The proofs of the hook kit ran on Claude Code 2.1.295 ([data](../proofs/hooks-claude-code/results.json)).
+- Claude Code. The proofs of the project hooks ran on Claude Code 2.1.295 ([data](../proofs/hooks-claude-code/results.json)).
 
 ## 1. Install Nookku
 
@@ -61,7 +61,7 @@ The first line goes to stderr. The second line is the reply, on stdout. Note the
 
 ## 4. Connect a test
 
-Install the hook kit for Claude Code, with the command that starts the agent:
+Install the project hooks for Claude Code, with the command that starts the agent:
 
 ```bash
 nookku init claude-code --entry "python3 agent.py"
@@ -94,7 +94,7 @@ PASS proves the connection, not the reply. `check` sent one fixed message to the
 
 ## 5. Start the viewer
 
-The hook kit shows each reply in the chat only as the reason of a blocked prompt. In the CLI, the start of a long reply can go off the screen. Thus open a second terminal, go to the project, and start the viewer:
+The project hooks show each reply in the chat only as the reason of a blocked prompt. In the CLI, the start of a long reply can go off the screen. Thus open a second terminal, go to the project, and start the viewer:
 
 ```bash
 cd toy-shop

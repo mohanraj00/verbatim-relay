@@ -1,7 +1,7 @@
 """The file .nookku/config.json (SPEC.md section 7.1): its keys and its one reader.
 
-The hook kit, `start`, `check` and `init` read the file with `read_config`, so one rule applies
-to its keys. Each part then checks the values that it uses.
+The relay (`nookku hook`), `start`, `check` and `init` read the file with `read_config`, so
+one rule applies to its keys. Each part then checks the values that it uses.
 """
 
 from __future__ import annotations

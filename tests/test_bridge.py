@@ -212,7 +212,7 @@ def test_the_tester_thread_is_not_an_app_session(tmp_path: Path, homes: tuple) -
     script.write_text(FIXTURE_APP)
     root = project(tmp_path, [sys.executable, str(script)], ["codex"])
     # As with codex exec, the prompt that ends the test is a new session: the tester thread of
-    # the fixture. The kit passes it to the bridge (SPEC.md section 7.2).
+    # the fixture. The relay passes it to the bridge (SPEC.md section 7.2).
     events = [
         {"hook_event_name": "UserPromptSubmit", "prompt": p, "session_id": sid}
         for p, sid in (

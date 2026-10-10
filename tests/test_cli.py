@@ -142,7 +142,7 @@ def test_transcript_without_a_config_uses_the_default_record(tmp_path, capsys):
 
 
 def _turns(path: Path, harness: str) -> None:
-    """Write the same turns as the plugin or the hook kit writes them."""
+    """Write the same turns as the plugin or the project hooks write them."""
     path.parent.mkdir(parents=True, exist_ok=True)
     rows = [
         ("old question", "old answer", True, "s0"),

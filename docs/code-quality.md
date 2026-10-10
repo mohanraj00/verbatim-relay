@@ -21,7 +21,7 @@ A check is a test, a lint rule, a conformance case or a CI step. "Review" means 
 
 ## 1. Fail closed
 
-**Rule.** If a relay path or a deny path fails, it blocks the message or the tool call. This applies to the plugin and to the hook kit, in each mode.
+**Rule.** If a relay path or a deny path fails, it blocks the message or the tool call. This applies to both forms of the relay, the plugin and the project hooks, in each mode.
 
 **Reason.** A relay path that fails open gives the tester's message to the model. The model can then change the message, and the test is not valid.
 
@@ -61,12 +61,11 @@ A check is a test, a lint rule, a conformance case or a CI step. "Review" means 
 
 **Check.**
 
-- `tests/test_contract.py::test_the_plugin_reads_each_one_line_case_like_the_tap` checks `CONTRACT_LINES` against `conformance/contract/` and against `contract.parse_reply`.
-- `register.test.ts`: "the plugin reads an agent line with the same rule as the Python tap" runs the same table through `contractShown`.
-- Deny patterns: `tests/test_kit.py` checks the shared `DENY_CASES` table against `kit.deny_pattern`, and `register.test.ts` ("the deny pattern has the same rule as the hook kit") runs it through `denyPattern` ([#70](https://github.com/mohanraj00/nookku/issues/70)).
-- Relay records: `tests/test_conformance.py` checks the shared `RELAY_LINES` table against `record.read_rows`, and `register.test.ts` runs it through `relayTurns` ([#71](https://github.com/mohanraj00/nookku/issues/71)).
-- Config keys: `start`, `check`, `init` and the hook kit read `.nookku/config.json` with `config.read_config`. `tests/test_cli.py::test_an_unknown_key_stops_start_check_and_the_hook_kit_with_one_message` checks that they give one error ([#89](https://github.com/mohanraj00/nookku/issues/89)).
-- The detail of a `blocked_call` row: `tests/test_kit.py` checks the shared `DETAIL_CASES` table against `kit.blocked_detail` and `record.read_rows`, and `register.test.ts` runs it through `blockedDetail` ([#88](https://github.com/mohanraj00/nookku/issues/88)).
+- Contract lines: `tests/test_contract.py::test_the_tap_reads_each_one_line_case_of_the_table` checks `contract_lines` in `tests/tables.json` against `conformance/contract/` and against `contract.parse_reply`.
+- Deny patterns: `tests/test_kit.py::test_the_deny_pattern_matches_each_case_of_the_table` checks `deny_cases` against `kit.deny_pattern` ([#70](https://github.com/mohanraj00/nookku/issues/70)).
+- Relay records: `tests/test_conformance.py::test_the_reader_takes_each_relay_line_of_the_table` checks `relay_lines` against `record.read_rows` ([#71](https://github.com/mohanraj00/nookku/issues/71)).
+- Config keys: `start`, `check`, `init` and `nookku hook` read `.nookku/config.json` with `config.read_config`. `tests/test_cli.py::test_an_unknown_key_stops_start_check_and_the_hook_kit_with_one_message` checks that they give one error ([#89](https://github.com/mohanraj00/nookku/issues/89)).
+- The detail of a `blocked_call` row: `tests/test_kit.py::test_the_blocked_call_detail_keeps_300_code_points` checks `detail_cases` against `kit.blocked_detail` and `record.read_rows` ([#88](https://github.com/mohanraj00/nookku/issues/88)).
 
 ## 4. Records
 
@@ -110,7 +109,7 @@ A check is a test, a lint rule, a conformance case or a CI step. "Review" means 
 |---|---|---|
 | The stdio tap and the HTTP tap wait for the agent | `stdio.TIMEOUT` | [240 s](../src/nookku/stdio.py) |
 | The test relay waits for the tap | `state.TIMEOUT` | [270 s](../src/nookku/state.py) |
-| The hook kit relay waits for the tap | `kit.TIMEOUT` | [280 s](../src/nookku/kit.py) |
+| The relay waits for the tap | `kit.TIMEOUT` | [280 s](../src/nookku/kit.py) |
 | The harness waits for the prompt hook | `kit.HOOK_DEADLINE` | [300 s](../src/nookku/kit.py) |
 
 **Reason.** If an inner wait is longer than an outer wait, the outer step stops first. Then the hook cannot block the prompt, and the record and the relay disagree.

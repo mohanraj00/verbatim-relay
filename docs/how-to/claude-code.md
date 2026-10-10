@@ -1,10 +1,10 @@
 # Test an agent in Claude Code
 
-Two [relays](../reference/glossary.md#relay) work in Claude Code: the plugin and the hook kit. Each relay now has its own guide. Each heading below keeps the old link of its section.
+In Claude Code, you install the [relay](../reference/glossary.md#relay) as the plugin or as the project hooks. Each form has its own guide. Each heading below keeps the old link of its section.
 
-- To select a relay, read [choose-a-relay.md](choose-a-relay.md).
+- To select a form, read [choose-a-relay.md](choose-a-relay.md).
 - The plugin: [claude-code-plugin.md](claude-code-plugin.md).
-- The hook kit: [claude-code-hook-kit.md](claude-code-hook-kit.md).
+- The project hooks: [claude-code-hook-kit.md](claude-code-hook-kit.md).
 
 ## Plugin
 

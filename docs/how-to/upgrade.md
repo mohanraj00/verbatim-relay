@@ -79,9 +79,9 @@ Each hook of the plugin, its MCP server and `/nookku` run the `nookku` command f
 
 ## 4. Trust the Codex hooks again
 
-If you use the hook kit in Codex, start `codex` in the project. If Codex shows the hooks prompt, accept it.
+If you use Codex, with the plugin or with the project hooks, start `codex` in the project. Type `/hooks`, check the 2 nookku hooks and trust them.
 
-Do not skip this step. If Codex does not trust the hooks, it does not run them, and the model answers your test messages ([troubleshooting.md](../troubleshooting.md#in-codex-the-model-answers-my-test-messages)). Codex asks again after each change to `.codex/hooks.json`, for example after a new `nookku init` ([codex.md](codex.md#install)).
+Do not skip this step. If Codex does not trust the hooks, it does not run them, and the model answers your test messages. `nookku start` refuses a test until you trust them ([SPEC.md section 7.8](../../SPEC.md#78-codex-hook-gate)) ([troubleshooting.md](../troubleshooting.md#in-codex-the-model-answers-my-test-messages)). You must trust a hook again after each change to it, for example after a new `nookku init` or a new plugin version ([codex.md](codex.md#install)).
 
 ## 5. Run `check`
 
@@ -121,7 +121,7 @@ verbatim-relay is now Nookku ([#181](https://github.com/mohanraj00/nookku/issues
 
 4. If `.verbatim-relay/` and `.nookku/` both exist, each command stops with exit 1 and names the 2 folders. Each hook event is blocked. Keep one folder: move the tests that you need into `.nookku/tests/`, then remove `.verbatim-relay/`.
 
-5. If you use the hook kit, run `nookku init` again with the same harness and flags. It replaces the hooks that verbatim-relay wrote. In Codex, trust the hooks again (step 4 above).
+5. If you use the project hooks (the hook kit of 0.3), run `nookku init` again with the same harness and flags. It replaces the hooks that verbatim-relay wrote. In Codex, trust the hooks again (step 4 above).
 
 6. If you use the Claude Code plugin, remove the old plugin and its marketplace, then install the new plugin:
 
@@ -131,6 +131,10 @@ verbatim-relay is now Nookku ([#181](https://github.com/mohanraj00/nookku/issues
    claude plugin marketplace add mohanraj00/nookku
    claude plugin install nookku@nookku
    ```
+
+   Then run `nookku init plugin` one time in each project. The plugin has no options now, so it reads each key from `.nookku/config.json`, and in a project with no config file, `/nookku start` keeps relay mode off. `init` keeps each key of an existing file. If you set plugin options before, give the same keys as flags ([reference/cli.md](../reference/cli.md#nookku-init)).
+
+   The plugin now also works in Codex ([codex.md](codex.md#install)). If you used the project hooks in Codex, you can change to the plugin ([choose-a-relay.md](choose-a-relay.md#from-the-project-hooks-to-the-plugin)).
 
 7. If your entry imports the package, change `verbatim_relay` to `nookku` in the import, for example `from nookku.agent import serve`. Then change the package in your app's environment:
 

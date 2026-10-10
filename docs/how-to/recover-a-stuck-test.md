@@ -1,6 +1,6 @@
 # Recover a stuck test
 
-A test is stuck when its bridge stopped, but the project still says that a test runs. For example, the computer restarted, or a process killed the bridge. Then the hook kit blocks each prompt with this text:
+A test is stuck when its bridge stopped, but the project still says that a test runs. For example, the computer restarted, or a process killed the bridge. Then the relay blocks each prompt with this text:
 
 ```text
 nookku: relay mode is on, but no test runs. Start one with: nookku start. Nothing was sent.

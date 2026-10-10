@@ -16,7 +16,7 @@ How-to guides. Each guide does one task. The guides are in the order of the task
 
 ### Choose
 
-- [Choose a relay](how-to/choose-a-relay.md): select the plugin or the hook kit, and an entry or the HTTP tap. Switch from one relay to the other.
+- [Choose the plugin or the project hooks](how-to/choose-a-relay.md): select a form of the relay, and an entry or the HTTP tap. Switch from one form to the other.
 
 ### Connect your app
 
@@ -32,7 +32,7 @@ How-to guides. Each guide does one task. The guides are in the order of the task
 
 - [Test an agent with the Claude Code plugin](how-to/claude-code-plugin.md): install the plugin, run a test, and read the [evaluation](reference/glossary.md#evaluation) at the end.
 - [Test an agent with the hook kit in Claude Code](how-to/claude-code-hook-kit.md): install the hook kit, and see each reply in `nookku view`.
-- [Test an agent in Codex](how-to/codex.md): the hook kit and the trust step.
+- [Test an agent in Codex](how-to/codex.md): the plugin, the project hooks and the trust step.
 
 ### Read the results
 
@@ -46,7 +46,7 @@ How-to guides. Each guide does one task. The guides are in the order of the task
 ## Maintain Nookku
 
 - [Upgrade](how-to/upgrade.md): upgrade the CLI, the package and the plugin, trust the Codex hooks again, and do the special step of a release.
-- [Remove](how-to/remove.md): remove the hooks of the kit, the plugin, the test files and the package.
+- [Remove](how-to/remove.md): remove the project hooks, the plugin, the test files and the package.
 - [Run the proofs](how-to/run-the-proofs.md): run the proofs again after a change to a [relay](reference/glossary.md#relay) or for a new [harness](reference/glossary.md#harness) version.
 
 ## Reference

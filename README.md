@@ -52,7 +52,7 @@ Select one route: try the toy shop, connect your app, or choose a relay.
 
 ### Try the toy shop
 
-In a clone of this repo, with the toy shop agent and the hook kit in Claude Code:
+In a clone of this repo, with the toy shop agent and the project hooks in Claude Code:
 
 ```bash
 nookku init claude-code --entry "python3 examples/toy-shop/agent.py"
@@ -78,7 +78,7 @@ The plugin shows each reply in the chat of Claude Code. The hook kit works in Cl
 
 ## Results
 
-| Proof | Claude Code 2.1.290, plugin | Claude Code 2.1.295, hook kit | Codex 0.160.0, hook kit |
+| Proof | Claude Code 2.1.290, plugin | Claude Code 2.1.295, project hooks | Codex 0.160.0, project hooks |
 |---|---|---|---|
 | Messages reach the agent byte for byte | 10/10 | 10/10 | 10/10 |
 | Replies reach the tester byte for byte | 10/10 | 10/10 | 10/10 |
@@ -87,7 +87,7 @@ The plugin shows each reply in the chat of Claude Code. The hook kit works in Cl
 | Audit finds planted faults | 5/5 | 5/5 | 5/5 |
 | After the test, the model has no memory of the conversation, and reads it from the transcript | yes | yes | yes |
 
-The last row ran on Claude Code 2.1.290 in both Claude Code columns. Data: [plugin](proofs/claude-code/results.json), [hook kit in Claude Code](proofs/hooks-claude-code/results.json), [hook kit in Codex](proofs/hooks-codex/results.json), [evaluation](docs/results.md#p5-the-model-judges-the-record-not-its-memory). Method: [docs/results.md](docs/results.md#1-proofs).
+The last row ran on Claude Code 2.1.290 in both Claude Code columns. Data: [plugin](proofs/claude-code/results.json), [project hooks in Claude Code](proofs/hooks-claude-code/results.json), [project hooks in Codex](proofs/hooks-codex/results.json), [evaluation](docs/results.md#p5-the-model-judges-the-record-not-its-memory). Method: [docs/results.md](docs/results.md#1-proofs).
 
 Under pressure, the mechanism had **0 breaks in 1,000 turns**. The test had 40 scripted conversations in each harness, 5 or 20 turns long. They had refusals, HTTP 500 errors, questions back to the tester and ambiguous messages. Each turn was a new harness call. I registered the design before the first run. Method, data and the one deviation: [docs/results.md](docs/results.md#2-benchmark-under-pressure).
 

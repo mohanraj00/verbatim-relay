@@ -1,10 +1,12 @@
 # Test an agent with the Claude Code plugin
 
-The plugin is a [relay](../reference/glossary.md#relay) for Claude Code. It shows each reply in the chat as the reason of the blocked prompt, which the model does not receive. Its command hooks run the `nookku` command. Its display layer uses function hooks, which are early access. To compare it with the hook kit, read [choose-a-relay.md](choose-a-relay.md).
+The plugin installs the [relay](../reference/glossary.md#relay) in Claude Code for each of your projects. The same plugin works in Codex ([codex.md](codex.md)). Its 2 command hooks run `nookku hook`, so the plugin and the project hooks have the same rules. The plugin shows each reply in the chat as the reason of the blocked prompt, which the model does not receive. To compare it with the project hooks, read [choose-a-relay.md](choose-a-relay.md).
 
-**Warning:** Do not also install the hook kit in this project. With both relays, each message goes to the agent two times ([choose-a-relay.md](choose-a-relay.md#switch-from-one-relay-to-the-other)).
+The plugin also has a display layer: `/nookku`, the status line and the Nookku pane. It uses function hooks, which are early access and can change between releases. It holds no rule. If it fails, the command hooks still relay each message.
 
-The proofs ran on Claude Code 2.1.290 ([data](../../proofs/claude-code/results.json)).
+**Warning:** Do not also write the project hooks in this project. With both forms, each message goes to the agent two times ([choose-a-relay.md](choose-a-relay.md#switch-from-one-form-to-the-other)).
+
+The plugin loads in Claude Code 2.1.295: its command hook blocks a relayed prompt, `/nookku status` shows the text of the core, and the model calls the `status` tool ([data](../../proofs/plugin/load.json), [method](../../scripts/proof_plugin_load.py)). [#219](https://github.com/mohanraj00/nookku/issues/219) runs the proofs P1 to P8 on the plugin.
 
 Before you start, connect a test to your app: [connect-your-agent.md](connect-your-agent.md). For the toy shop agent of this repo, the configuration is one line:
 
@@ -14,7 +16,7 @@ Before you start, connect a test to your app: [connect-your-agent.md](connect-yo
 
 ## Install
 
-1. Install the `nookku` command. Each hook of the plugin runs it:
+1. Install the `nookku` command. Each hook of the plugin, its MCP server and `/nookku` run it from `PATH`:
 
    ```bash
    uv tool install nookku
@@ -36,12 +38,12 @@ Before you start, connect a test to your app: [connect-your-agent.md](connect-yo
 ## Run a test
 
 1. Type `/nookku start`. The plugin starts the entry through the [tap](../reference/glossary.md#tap), and [relay mode](../reference/glossary.md#relay-mode) goes on. The status line shows it. The start text tells you how to end the test.
-2. Type your test messages. Each reply shows in the chat as the reason of the blocked prompt. `/nookku view` shows the turns in the Nookku pane.
+2. Type your test messages. Each reply shows in the chat as the reason of the blocked prompt. `/nookku view` shows the last 40 lines of `nookku view` in the Nookku pane. The relay does not send attachments: in relay mode, the plugin drops a prompt with an image or a file, and sends nothing.
 3. Type the prompt `nookku end`, with no slash. The plugin stops the entry, copies the app's session files into the [test folder](../reference/glossary.md#test-folder), builds the [trace](../reference/glossary.md#trace) and switches relay mode off. Then the prompt goes to the model with the evaluation prompt. The model writes `report.md` in the test folder (see [Evaluation](#evaluation)).
 
-`/nookku end` ends the test with no evaluation. To evaluate that test later, type the prompt `nookku end`. `/nookku on` and `/nookku off` do the same as `start` and `end`. The prompts `nookku start` and `nookku status` also work.
+`/nookku end` ends the test with no evaluation. To evaluate that test later, type the prompt `nookku end`. `/nookku on` and `/nookku off` do the same as `start` and `end`. The prompts `nookku start` and `nookku status` also work. `/nookku <word>` runs `nookku mode <word>`, so the text is the text of the core.
 
-`/nookku status` shows relay mode and the running test. The plugin runs `nookku status` for it. Thus a test whose process stopped does not show as a running test.
+`/nookku` or `/nookku status` shows relay mode and the running test. The plugin runs `nookku status` for it. Thus a test whose process stopped does not show as a running test.
 
 `nookku trace` builds the trace of the latest test again and shows its findings.
 
@@ -51,11 +53,11 @@ If a message gets an error, read [troubleshooting.md](../troubleshooting.md#duri
 
 ## What the model can do
 
-The model reads the exact conversation of the latest test with the read-only `transcript` tool. The tool runs `nookku transcript`, so the model gets the same text as with the hook kit.
+The model reads the exact conversation of the latest test with the read-only `transcript` tool of the MCP server `nookku mcp`. In Claude Code, its name is `mcp__plugin_nookku_nookku__transcript`. The tool gives the text of `nookku transcript` in pages, with a hash of each page ([SPEC.md section 5](../../SPEC.md#5-relays)). So the model gets the same text as with the project hooks.
 
-During a test, the model cannot send a message to the agent, and it cannot change the files in `.nookku/`. The plugin denies each tool call that writes into `.nookku/`. It also denies each other tool call that names `.nookku`, also a read command such as `cat`. Only the file tools can read these files ([SPEC.md section 5](../../SPEC.md#5-relays)).
+During a test, the model cannot send a message to the agent, and it cannot change the files in `.nookku/`. The relay denies each tool call that writes into `.nookku/`. It also denies each other tool call that names `.nookku`, also a read command such as `cat`. Only the file tools can read these files ([SPEC.md section 5](../../SPEC.md#5-relays)).
 
-During a test, the plugin also denies a model command that runs the entry, for example `python3 entry.py`. A command that only reads the entry, for example `cat entry.py`, can run.
+During a test, the relay also denies a model command that runs the entry, for example `python3 entry.py`. A command that only reads the entry, for example `cat entry.py`, can run.
 
 ## Options
 
@@ -73,7 +75,7 @@ The evaluation prompt ([evaluate.md](../../src/nookku/evaluate.md)) tells the mo
 
 The model did not see the conversation while you talked, so it judges the record, not its memory. Claude Code asks you to allow each command of the model, unless your permission settings allow it.
 
-After a test, the plugin denies model writes to the test folder, except `report.md`. A shell command that names `.nookku` can only read, or write `report.md` ([SPEC.md section 5](../../SPEC.md#5-relays) lists the read programs).
+After a test, the relay denies model writes to the test folder, except `report.md`. A shell command that names `.nookku` can only read, or write `report.md` ([SPEC.md section 5](../../SPEC.md#5-relays) lists the read programs).
 
 To stop the evaluation, add `"evaluate": false` to `.nookku/config.json`. [evaluation-example.md](../evaluation-example.md) shows a test and its report.
 
@@ -87,7 +89,8 @@ Exit code 0 means clean, 1 means a break, and 2 means that a record is missing o
 
 ## More
 
-- Use the hook kit: [claude-code-hook-kit.md](claude-code-hook-kit.md).
+- Use the project hooks: [claude-code-hook-kit.md](claude-code-hook-kit.md).
+- Use the plugin in Codex: [codex.md](codex.md).
 - An agent that is already an HTTP server: [http-tap.md](http-tap.md).
 - Backends of your app: [add-a-backend.md](add-a-backend.md).
 - Direct model calls and OpenTelemetry: [record-model-calls.md](record-model-calls.md).

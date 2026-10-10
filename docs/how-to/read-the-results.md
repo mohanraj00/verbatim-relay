@@ -146,7 +146,7 @@ The audit has 7 break classes ([audit.py](../../src/nookku/audit.py), [SPEC.md s
 |---|---|---|
 | `altered_input` | The `said` text in `relay.jsonl` and the `input` text in `tap.jsonl` at that position are different. | Make sure that only one relay sends messages to the tap. |
 | `injected_input` | `tap.jsonl` has an exchange that has no turn in `relay.jsonl`. `relay_line` is `null`. | Make sure that only one relay sends messages to the tap. |
-| `duplicate_send` | `tap.jsonl` has more exchanges with the text of a `said` than `relay.jsonl` has turns with it. | Make sure that only one relay sends messages to the tap. For example, do not use the plugin and the hook kit in one project. |
+| `duplicate_send` | `tap.jsonl` has more exchanges with the text of a `said` than `relay.jsonl` has turns with it. | Make sure that only one relay sends messages to the tap. For example, do not use the plugin and the project hooks in one project. |
 | `out_of_order` | Both records have the message, but at different positions. | Make sure that only one relay sends messages to the tap. |
 | `not_delivered` | `relay.jsonl` has a turn that has no exchange in `tap.jsonl`. `tap_line` is `null`. | Read `bridge.log` and `app.log`. |
 | `altered_reply` | The `reply` text in `tap.jsonl` and the `shown` text in `relay.jsonl` are different. | Read `bridge.log`. |
