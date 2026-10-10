@@ -1,11 +1,11 @@
 {
  "date": "2026-10-10",
- "setup": "hooks-claude-code",
+ "setup": "plugin-claude-code",
  "harness": "claude-code",
  "version": "2.1.295 (Claude Code)",
  "transport": "http-stream",
- "agent_streams": "always",
- "openai_stream": false,
+ "agent_streams": "on_request",
+ "openai_stream": true,
  "turns": [
   {
    "mode": "neutral",
