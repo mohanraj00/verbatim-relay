@@ -65,9 +65,9 @@ def test_each_marketplace_names_the_plugin_folder() -> None:
     codex = load(ROOT / ".agents" / "plugins" / "marketplace.json")["plugins"]
     assert [p["source"] for p in claude] == ["./plugins/nookku"]
     assert [p["source"] for p in codex] == [{"source": "local", "path": "./plugins/nookku"}]
-    # Codex skips an untrusted hook, so the plugin alone fails open (#177). Codex cannot install it
-    # until the trust gate of #217 refuses a test with an untrusted hook.
-    assert [p["policy"]["installation"] for p in codex] == ["NOT_AVAILABLE"]
+    # Codex skips an untrusted hook, so the plugin alone fails open (#177). The trust gate of #217
+    # refuses a test with an untrusted hook, so Codex can install the plugin.
+    assert [p["policy"]["installation"] for p in codex] == ["AVAILABLE"]
 
 
 def test_the_typescript_holds_no_rule() -> None:
