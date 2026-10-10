@@ -4,13 +4,13 @@ Nookku reads its configuration from the file `.nookku/config.json` in your proje
 
 ## `.nookku/config.json`
 
-The hooks of the plugin and the project hooks read all keys of this file, and the commands of a test read the test keys. One reader applies one rule for `start`, `check`, `init` and the hook kit ([SPEC.md section 7.1](../../SPEC.md#71-configuration)). An unknown key gives the same error in each of them:
+The hooks of the plugin and the project hooks read all keys of this file, and the commands of a test read the test keys. One reader applies one rule for `start`, `check`, `init` and the relay ([SPEC.md section 7.1](../../SPEC.md#71-configuration)). An unknown key gives the same error in each of them:
 
 ```text
 .nookku/config.json has unknown keys: ['<key>']. Correct or remove them.
 ```
 
-`start` and `check` stop, `init` writes nothing, and in relay mode the hook kit blocks each prompt.
+`start` and `check` stop, `init` writes nothing, and in relay mode the relay blocks each prompt.
 
 `nookku init` writes a new file with each key. In an existing file, it keeps each key and changes only the keys of the flags that you give ([cli.md](cli.md#nookku-init)).
 
@@ -29,7 +29,7 @@ These keys configure a test ([SPEC.md section 7.1](../../SPEC.md#71-configuratio
 
 ### Relay keys
 
-These keys configure the hook kit when there is no entry, for an agent that is an HTTP server ([how-to/http-tap.md](../how-to/http-tap.md)). With an entry, the test gives the tap URL, and the kit does not use `tap_url`, the adapter keys or `record`. It still denies model calls to `tap_url` and `agent_url`.
+These keys configure the relay when there is no entry, for an agent that is an HTTP server ([how-to/http-tap.md](../how-to/http-tap.md)). With an entry, the test gives the tap URL, and the kit does not use `tap_url`, the adapter keys or `record`. It still denies model calls to `tap_url` and `agent_url`.
 
 | Key | Type | Default | Meaning |
 |---|---|---|---|
@@ -44,7 +44,7 @@ These keys configure the hook kit when there is no entry, for an agent that is a
 
 ### Examples
 
-The toy shop with the hook kit:
+The toy shop with the project hooks:
 
 ```json
 {"entry": ["python3", "agent.py"], "models": []}

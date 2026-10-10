@@ -1,6 +1,6 @@
 # Remove Nookku
 
-This page removes Nookku from a project and from your computer: the hooks of the kit, the plugin, the test files and the package.
+This page removes Nookku from a project and from your computer: the project hooks, the plugin, the test files and the package.
 
 The output on this page is the real output of each step. I used the toy shop project of [getting-started.md](../getting-started.md) with verbatim-relay 0.3.0, Claude Code 2.1.294 and jq 1.7.1 on macOS. I shortened the paths of the folders to `.../`. The test ids are different on your machine.
 
@@ -22,7 +22,7 @@ End the test before you remove anything. `end` stops the bridge and the entry of
 
 If `status` names no test but relay mode is on, follow [recover-a-stuck-test.md](recover-a-stuck-test.md).
 
-## 2. Remove the hooks of the kit
+## 2. Remove the project hooks
 
 `nookku init` adds 2 hook entries to one file ([kit.py](../../src/nookku/kit.py)):
 
@@ -70,7 +70,7 @@ The `command` of each hook contains `nookku hook`. This is the file that `nookku
 
 `.codex/hooks.json` has the same form, with `--harness codex`.
 
-Count the hooks of the kit in the 2 files:
+Count the project hooks in the 2 files:
 
 ```bash
 grep -c 'nookku hook' .claude/settings.local.json .codex/hooks.json
@@ -81,7 +81,7 @@ grep -c 'nookku hook' .claude/settings.local.json .codex/hooks.json
 .codex/hooks.json:2
 ```
 
-Remove each hook object whose `command` contains `nookku hook`. If its group then has no hook, remove the group too. Keep each other hook and each other key. You can edit the file by hand, or use [jq](https://jqlang.org/). This jq filter removes the hooks of the kit, then each empty group and each empty event:
+Remove each hook object whose `command` contains `nookku hook`. If its group then has no hook, remove the group too. Keep each other hook and each other key. You can edit the file by hand, or use [jq](https://jqlang.org/). This jq filter removes the project hooks, then each empty group and each empty event:
 
 ```bash
 jq '.hooks |= (with_entries(.value |= (map(.hooks |= map(select((.command // "") | tostring | contains("nookku hook") | not))) | map(select(.hooks | length > 0)))) | with_entries(select(.value | length > 0)))' .claude/settings.local.json > settings.tmp && mv settings.tmp .claude/settings.local.json
@@ -118,7 +118,7 @@ For Codex, use the same filter on `.codex/hooks.json`:
 jq '.hooks |= (with_entries(.value |= (map(.hooks |= map(select((.command // "") | tostring | contains("nookku hook") | not))) | map(select(.hooks | length > 0)))) | with_entries(select(.value | length > 0)))' .codex/hooks.json > hooks.tmp && mv hooks.tmp .codex/hooks.json
 ```
 
-In my run, `.codex/hooks.json` had only the hooks of the kit, so the result was `{"hooks": {}}`.
+In my run, `.codex/hooks.json` had only the project hooks, so the result was `{"hooks": {}}`.
 
 Count again. Each file must show 0. `grep` exits with 1, because it found no line:
 
@@ -133,7 +133,7 @@ grep -c 'nookku hook' .claude/settings.local.json .codex/hooks.json
 
 ## 3. Uninstall the plugin
 
-If you use the Claude Code plugin, uninstall it:
+If you use the plugin in Claude Code, uninstall it:
 
 ```bash
 claude plugin uninstall nookku@nookku
@@ -152,6 +152,15 @@ claude plugin marketplace remove nookku
 ```text
 ✔ Successfully removed marketplace: nookku
 ```
+
+If you use the plugin in Codex, remove the plugin and its local copy. If you added the marketplace only for Nookku, remove it too:
+
+```bash
+codex plugin remove nookku@nookku
+codex plugin marketplace remove nookku
+```
+
+I did not record the output of these 2 commands. `codex plugin list` shows the plugins that stay.
 
 ## 4. Delete or keep the test files
 

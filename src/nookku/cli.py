@@ -133,7 +133,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     mode.add_argument("--root", type=Path, default=Path.cwd())
     mode.add_argument("--tester-session", help="the tester's harness session id")
 
-    view = sub.add_parser("view", help="print each relayed turn (the hook kit's display)")
+    view = sub.add_parser("view", help="print each relayed turn (a display for a second terminal)")
     view.add_argument("--root", type=Path, default=Path.cwd())
     view.add_argument("--no-follow", action="store_true", help="print the turns so far and stop")
     view.add_argument("--record", type=Path, help="the relay record (default: from the config)")

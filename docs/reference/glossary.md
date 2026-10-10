@@ -64,9 +64,21 @@ The model in the tester's harness. In relay mode, it does not receive the tester
 
 SPEC.md: [section 5](../../SPEC.md#5-relays), [section 9](../../SPEC.md#9-evaluation).
 
+## Plugin
+
+The nookku plugin, `plugins/nookku`, for Claude Code and Codex. Its 2 command hooks run the relay. It also has the MCP server `nookku mcp` and the `setup` skill. In Claude Code, it adds `/nookku`, a status line and a pane. It is one of the 2 forms of the relay. The other form is the project hooks.
+
+SPEC.md: [section 5](../../SPEC.md#5-relays).
+
+## Project hooks
+
+The 2 command hooks that `nookku init claude-code` or `nookku init codex` writes into one project. They run the relay, with the same rules as the plugin. Use them if you cannot install plugins.
+
+SPEC.md: [section 5](../../SPEC.md#5-relays).
+
 ## Relay
 
-The harness extension that carries each message from the tester to the tap, and each reply from the tap to the tester. The model does not write either direction. A relay is the Claude Code plugin or the hook kit. A relay writes the relay record. It fails closed: if it cannot send a message, the message still does not go to the model.
+The command `nookku hook`, which carries each message from the tester to the tap, and each reply from the tap to the tester. The model does not write either direction. The plugin and the project hooks run it. The relay writes the relay record. It fails closed: if it cannot send a message, the message still does not go to the model.
 
 SPEC.md: [section 1](../../SPEC.md#1-parts), [section 5](../../SPEC.md#5-relays).
 

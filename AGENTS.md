@@ -85,7 +85,7 @@ claude plugin validate plugins/nookku && claude plugin test plugins/nookku
 ## Proofs (local only)
 
 - `scripts/proofs_claude_code.py` runs P1 to P4 for the plugin with `claude -p` and writes `proofs/claude-code/`.
-- `scripts/proofs_hooks.py codex|claude-code` runs P1 to P4 for the hook kit and writes `proofs/hooks-<harness>/`.
+- `scripts/proofs_hooks.py codex|claude-code` runs P1 to P4 for the project hooks and writes `proofs/hooks-<harness>/`.
 - `scripts/proof_backend.py` checks that the backend proxy forwards each byte, with no model, and writes `proofs/backend/`.
 - `scripts/proof_model_api.py` checks that the model API proxy forwards each byte and each stream part when it comes, with no model, and writes `proofs/model-api/`.
 - `scripts/proof_report.py plugin|hooks-claude-code|hooks-codex` runs a test of `examples/toy-shop-models/` and the evaluation at its end (P5 extended, P6, P7 and P8), and writes `proofs/report/`.

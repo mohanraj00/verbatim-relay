@@ -105,7 +105,7 @@ Switch relay mode on or off. With an entry, `on` starts a test and `off` ends it
 
 ### `nookku view`
 
-Print each relayed turn. This is the display of the hook kit. With an entry, it shows the turns of the latest test, and it follows to the next test.
+Print each relayed turn. Both forms of the relay use it to show each reply in a second terminal. With an entry, it shows the turns of the latest test, and it follows to the next test.
 
 If the relay record has an invalid line, `view` shows the error with the file and the line on stderr. Without `--no-follow`, it shows the error one time and continues to wait. When the record changes and is valid, it shows the next turns. With `--no-follow`, it stops with exit code 2. A test has no relay record before its first turn, so the view of such a test shows no turn and exits with 0. After the end of a test, `nookku verify` shows a record that is missing.
 
@@ -200,7 +200,7 @@ Check that no record of a test changed after its end ([SPEC.md section 7.4](../.
 nookku init HARNESS [--root PATH] [--entry COMMAND] [--models LIST] [options]
 ```
 
-Write the config, and the project hooks of a harness. It writes `.nookku/config.json`, the file `.nookku/mode`, and the hooks: `.codex/hooks.json` for Codex, `.claude/settings.local.json` for Claude Code. It keeps your other hooks, also a hook in the same group as a hook of the kit. With `plugin`, it writes no hooks, because the nookku plugin has them. Do not use the plugin and the project hooks in one project, or each message is sent two times.
+Write the config, and the project hooks of a harness. It writes `.nookku/config.json`, the file `.nookku/mode`, and the hooks: `.codex/hooks.json` for Codex, `.claude/settings.local.json` for Claude Code. It keeps your other hooks, also a hook in the same group as a hook of nookku. With `plugin`, it writes no hooks, because the nookku plugin has them. Do not use the plugin and the project hooks in one project, or each message is sent two times.
 
 If `config.json` exists, `init` keeps each key and changes only the keys of the flags that you give. For example, a second run keeps `backends` and `"evaluate": false`. It prints the keys that it changed and the keys that it kept. A new `config.json` gets each key. The default of a flag applies only to a new file.
 

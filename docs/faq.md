@@ -20,9 +20,9 @@ No. A test runs your app through an entry in `.nookku/`. The entry is test code.
 
 The cost is plumbing. You write the entry and `config.json` once, or you let the harness model write them with `nookku setup`. You change them when the start or the wiring of your app changes. The package has no runtime dependencies ([pyproject.toml](../pyproject.toml)), so it adds no package to your app.
 
-## Plugin or hook kit?
+## Plugin or project hooks?
 
-In Claude Code, use the plugin: it shows each reply in the chat. Use the hook kit in Codex, or in Claude Code if the plugin fails. The plugin uses function hooks, which are early access. Do not use both in one project, or each message goes to the agent two times. Read [how-to/choose-a-relay.md](how-to/choose-a-relay.md).
+Use the plugin if you can, in Claude Code or in Codex. Use the project hooks if you cannot install plugins. Both forms run the same relay, `nookku hook`. Do not use both in one project, or each message goes to the agent two times. Read [how-to/choose-a-relay.md](how-to/choose-a-relay.md).
 
 ## Does the model see my test messages?
 
