@@ -1,5 +1,5 @@
 {
- "date": "2026-10-09",
+ "date": "2026-10-10",
  "nookku": "0.3.1",
  "method": "scripts/proof_plugin_load.py",
  "claude_code": {
@@ -49,7 +49,7 @@
    "nookku:setup"
   ],
   "checks": {
-   "the repo marketplace refuses the install until #217": true,
+   "the repo marketplace installs the plugin": true,
    "the hooks file parses": true,
    "2 command hooks": true,
    "each hook is untrusted, so a person must trust it": true,

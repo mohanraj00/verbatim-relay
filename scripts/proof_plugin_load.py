@@ -5,10 +5,10 @@ and the real plugin runs with `claude -p`. The command hook must block a relayed
 /nookku command must show the output of the core, and the model must call the status tool.
 
 Codex: the script uses a new, empty CODEX_HOME, so the user config does not change. The repo
-marketplace must refuse the install, because the plugin is NOT_AVAILABLE until the trust gate of
-#217. A copy of the marketplace with the plugin AVAILABLE then installs it, and app-server lists
-the hooks, the MCP tools and the skills. It never calls a trust API, so each hook stays
-untrusted. A person trusts the hooks (#217, #219).
+marketplace must install the plugin. The trust gate of #217 refuses a test with an untrusted hook,
+so the plugin is AVAILABLE. A copy of the marketplace with a probe plugin then installs both, and
+app-server lists the hooks, the MCP tools and the skills. It never calls a trust API, so each hook
+stays untrusted. A person trusts the hooks (#217, #219).
 
 MCP root: a probe server in each harness records its working folder and CLAUDE_PROJECT_DIR. The
 parent process has a CLAUDE_PROJECT_DIR of another project, as in a Codex that a Claude Code
@@ -232,15 +232,15 @@ def codex(work: Path) -> dict[str, Any]:
     (project / STATE_DIR).mkdir(parents=True)
     env = {**os.environ, "CODEX_HOME": str(home)}
     run(["codex", "plugin", "marketplace", "add", str(ROOT), "--json"], ROOT, env)
-    refused = run(["codex", "plugin", "add", "nookku@nookku", "--json"], ROOT, env)
+    added = run(["codex", "plugin", "add", "nookku@nookku", "--json"], ROOT, env)
+    run(["codex", "plugin", "remove", "nookku@nookku", "--json"], ROOT, env)
     run(["codex", "plugin", "marketplace", "remove", "nookku"], ROOT, env)
-    # A copy of the marketplace with the plugin AVAILABLE, and the probe plugin.
+    # A copy of the marketplace with the probe plugin.
     market = work / "codex-market"
     shutil.copytree(PLUGIN, market / "plugins" / "nookku")
     probe_plugin(market / "plugins" / "probe", {"hooks": {}}, work / "codex-mcp.json")
     listing = json.loads((ROOT / ".agents" / "plugins" / "marketplace.json").read_text())
     entry = listing["plugins"][0]
-    entry["policy"]["installation"] = "AVAILABLE"
     probe = {**entry, "name": "probe", "source": {"source": "local", "path": "./plugins/probe"}}
     listing["plugins"].append(probe)
     (market / ".agents" / "plugins").mkdir(parents=True)
@@ -268,9 +268,7 @@ def codex(work: Path) -> dict[str, Any]:
         "mcp_error": server["toolsError"],
         "skills": found,
         "checks": {
-            "the repo marketplace refuses the install until #217": (
-                "is not available for install" in refused
-            ),
+            "the repo marketplace installs the plugin": '"installedPath"' in added,
             "the hooks file parses": hooks["data"][0]["warnings"] == [],
             "2 command hooks": events == ["preToolUse", "userPromptSubmit"],
             "each hook is untrusted, so a person must trust it": all(
