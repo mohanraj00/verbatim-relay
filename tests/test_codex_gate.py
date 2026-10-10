@@ -125,8 +125,16 @@ def test_a_changed_plugin_script_is_modified(tmp_path: Path) -> None:
     assert len(found) == 2 and all("its script" in p for p in found)
 
 
-def test_a_project_hook_with_another_command_is_modified(tmp_path: Path) -> None:
-    hooks = project_hooks(tmp_path, UserPromptSubmit={"command": "nookku hook --harness codex"})
+@pytest.mark.parametrize(
+    "command",
+    [
+        "nookku hook --harness codex",
+        "/usr/bin/true -m nookku hook --root {root} --harness codex",
+    ],
+)
+def test_a_project_hook_with_another_command_is_modified(tmp_path: Path, command: str) -> None:
+    change = {"command": command.format(root=tmp_path)}
+    hooks = project_hooks(tmp_path, UserPromptSubmit=change)
     found = codex_gate.problems(hooks, tmp_path)
     assert len(found) == 1
     assert found[0].startswith("the project hook UserPromptSubmit is modified: its command")

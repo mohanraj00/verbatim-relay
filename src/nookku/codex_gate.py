@@ -161,8 +161,13 @@ def _definition_problem(origin: str, event: str, hook: dict[str, Any], root: Pat
             argv = shlex.split(command)
         except ValueError:
             argv = []
-        if argv[1:] != ["-m", "nookku", "hook", "--root", str(root), "--harness", "codex"]:
-            return f"its command is not the command of nookku init codex: {command}"
+        # The full command, with the Python of this nookku: another executable can exit 0 and
+        # not block the prompt. If nookku moved to another Python, run nookku init codex again.
+        if argv != shlex.split(kit.hook_command(root, "codex")):
+            return (
+                f"its command is not the command of nookku init codex: {command}. If you "
+                "installed nookku again, run nookku init codex again"
+            )
         return None
     script = Path(str(hook.get("sourcePath", ""))).parent / PLUGIN_SCRIPT
     if command != f'sh "{script}" {event}':
