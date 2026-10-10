@@ -133,7 +133,7 @@ grep -c 'nookku hook' .claude/settings.local.json .codex/hooks.json
 
 ## 3. Uninstall the plugin
 
-If you use the Claude Code plugin, uninstall it:
+If you use the plugin in Claude Code, uninstall it:
 
 ```bash
 claude plugin uninstall nookku@nookku
@@ -152,6 +152,15 @@ claude plugin marketplace remove nookku
 ```text
 ✔ Successfully removed marketplace: nookku
 ```
+
+If you use the plugin in Codex, remove the plugin and its local copy. If you added the marketplace only for Nookku, remove it too:
+
+```bash
+codex plugin remove nookku@nookku
+codex plugin marketplace remove nookku
+```
+
+I did not record the output of these 2 commands. `codex plugin list` shows the plugins that stay.
 
 ## 4. Delete or keep the test files
 

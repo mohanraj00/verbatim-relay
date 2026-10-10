@@ -66,7 +66,7 @@ nookku 0.3.0
 
 ## 3. Update the plugin
 
-If you use the Claude Code plugin, update the marketplace and the plugin:
+If you use the plugin in Claude Code, update the marketplace and the plugin:
 
 ```bash
 claude plugin marketplace update nookku
@@ -74,6 +74,15 @@ claude plugin update nookku@nookku
 ```
 
 The second command names the new version, or says that the plugin is already at the latest version. Restart Claude Code to load the new version. `claude plugin list` shows the version of `nookku@nookku`.
+
+If you use the plugin in Codex, update the marketplace, then add the plugin again. This installs the version of the updated marketplace ([method](../../scripts/spike_codex_plugin.py)):
+
+```bash
+codex plugin marketplace upgrade nookku
+codex plugin add nookku@nookku
+```
+
+Restart Codex to load the new version. Do this step before step 4. If the plugin script of a release changes, the gate refuses the old plugin: its script SHA-256 is not the SHA-256 of the new CLI ([SPEC.md section 7.8](../../SPEC.md#78-codex-hook-gate)). A trust step does not correct this.
 
 Each hook of the plugin, its MCP server and `/nookku` run the `nookku` command from `PATH`. Upgrade the CLI and the plugin to the same version. The plugin has no options: it reads `config.json`. If you set plugin options before 0.4.0, set the same keys with `nookku init plugin` ([reference/cli.md](../reference/cli.md#nookku-init)).
 
